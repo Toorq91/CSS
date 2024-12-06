@@ -1,0 +1,30 @@
+body {
+  background-color: black;
+}
+.block {
+  width: 84px; 
+  height: 84px; 
+  display: block; 
+  background: red;
+  border: 1px solid #000000;
+}
+
+.block {
+  -webkit-animation-name:             rotate; 
+    -webkit-animation-duration:         5s; 
+    -webkit-animation-iteration-count:  infinite;
+    -webkit-animation-timing-function: ease-in-out;
+    /* -webkit-animation-delay: 3s; */
+}
+
+@-webkit-keyframes rotate {
+  0% {
+  -webkit-transform: rotate(0deg);
+  }
+  50% { /* Etter 2,5 sekunder når den 90 grader */
+    -webkit-transform: rotate(90deg);
+  }
+  100% {  /* Holder 90 grader i 2.5 sekunder til */
+  -webkit-transform: rotate(90deg);
+  }
+}
