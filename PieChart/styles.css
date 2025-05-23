@@ -1,0 +1,26 @@
+h1 {
+    color: white;
+    font-size: 34px;
+    margin-top: 20px;
+  }
+
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 40px;
+    background: #002147;
+  }
+  canvas {
+    margin: 20px auto;
+    display: block;
+    background: #002147;
+    border-radius: 50%;
+  }
+  .inputs {
+    margin-top: 20px;
+    color: white;
+  }
+  input {
+    width: 60px;
+    margin: 0 10px;
+  }
