@@ -1,62 +1,82 @@
 const canvas = document.getElementById('pieChart');
-    const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d');
 
-    const inputs = ['val1', 'val2', 'val3'].map(id => document.getElementById(id));
-    const colors = ['#2E8B57', '#FF00BF', '#324AB2'];
+const inputs = ['val1', 'val2', 'val3'].map(id => document.getElementById(id));
+const colors = ['#2E8B57', '#FF00BF', '#324AB2'];
 
-    function drawPieChart() {
-      const values = inputs.map(input => parseFloat(input.value) || 0);
-      const total = values.reduce((sum, val) => sum + val, 0);
+let animationProgress = 0;
+const animationSpeed = 0.008; // Smaller = slower animation
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+function animateChart() {
+  animationProgress += animationSpeed;
+  if (animationProgress > 1) animationProgress = 1;
 
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
-      const outerRadius = 200;
-      const innerRadius = 60;
+  drawPieChart(animationProgress);
 
-      let startAngle = 0;
+  if (animationProgress < 1) {
+    requestAnimationFrame(animateChart);
+  }
+}
 
-      values.forEach((value, i) => {
-        const sliceAngle = (value / total) * 2 * Math.PI;
-        const endAngle = startAngle + sliceAngle;
+function drawPieChart(progress = 1) {
+  const values = inputs.map(input => parseFloat(input.value) || 0);
+  const total = values.reduce((sum, val) => sum + val, 0);
 
-        // Draw slice
-        ctx.beginPath();
-        ctx.moveTo(centerX, centerY);
-        ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
-        ctx.lineTo(centerX, centerY);
-        ctx.fillStyle = colors[i];
-        ctx.fill();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Draw label
-        const midAngle = startAngle + sliceAngle / 2;
-        const labelX = centerX + Math.cos(midAngle) * 100;
-        const labelY = centerY + Math.sin(midAngle) * 100;
-        const percent = total > 0 ? ((value / total) * 100).toFixed(1) + '%' : '';
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  const outerRadius = 200;
+  const innerRadius = 60;
 
-        ctx.fillStyle = 'white';
-        ctx.font = 'bold 14px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        if (percent !== 'NaN%') {
-          ctx.fillText(percent, labelX, labelY);
-        }
+  let startAngle = 0;
 
-        startAngle = endAngle;
-      });
+  values.forEach((value, i) => {
+    const sliceAngle = (value / total) * 2 * Math.PI * progress;
+    const endAngle = startAngle + sliceAngle;
 
-      // Draw hollow center
-      ctx.beginPath();
-      ctx.fillStyle = '#002147'; // matches background
-      ctx.arc(centerX, centerY, innerRadius, 0, 2 * Math.PI);
-      ctx.fill();
+    // Draw slice
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.arc(centerX, centerY, outerRadius, startAngle, endAngle);
+    ctx.lineTo(centerX, centerY);
+    ctx.fillStyle = colors[i];
+    ctx.fill();
+
+    // Draw % label only after animation completes
+    if (progress === 1) {
+      const midAngle = startAngle + sliceAngle / 2;
+      const labelX = centerX + Math.cos(midAngle) * 100;
+      const labelY = centerY + Math.sin(midAngle) * 100;
+      const percent = total > 0 ? ((value / total) * 100).toFixed(1) + '%' : '';
+
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 14px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      if (percent !== 'NaN%') {
+        ctx.fillText(percent, labelX, labelY);
+      }
     }
 
-    inputs.forEach(input => input.addEventListener('input', drawPieChart));
+    startAngle = endAngle;
+  });
 
-    inputs[0].value = 30;
-    inputs[1].value = 40;
-    inputs[2].value = 30;
+  // Draw hollow center
+  ctx.beginPath();
+  ctx.fillStyle = '#002147'; // background color
+  ctx.arc(centerX, centerY, innerRadius, 0, 2 * Math.PI);
+  ctx.fill();
+}
 
-    drawPieChart();
+// Trigger animation on input changes
+inputs.forEach(input =>
+  input.addEventListener('input', () => {
+    animationProgress = 0;
+    requestAnimationFrame(animateChart);
+  })
+);
+
+// Initial draw with animation
+animationProgress = 0;
+requestAnimationFrame(animateChart);
